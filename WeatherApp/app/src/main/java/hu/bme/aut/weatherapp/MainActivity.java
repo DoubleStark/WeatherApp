@@ -1,6 +1,10 @@
 package hu.bme.aut.weatherapp;
 
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -18,6 +22,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import hu.bme.aut.weatherapp.adapter.CitiesAdapter;
@@ -26,8 +31,12 @@ import hu.bme.aut.weatherapp.data.City;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener
 {
+    public static final String CITY_SELECTED = "CITY_SELECTED";
+
     private RecyclerView recyclerCities;
     private CitiesAdapter citiesAdapter;
+
+    private int positionOfCity = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -41,22 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setUpUI()
     {
-        setUpAddCityUI();
         setupRecyclerView();
         setUpToolBar();
-    }
-
-    public void setUpAddCityUI()
-    {
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View view)
-            {
-                showAddCityDialog();
-            }
-        });
     }
 
     public void setUpToolBar()
@@ -75,7 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private void setupRecyclerView() {
+    private void setupRecyclerView()
+    {
         recyclerCities = (RecyclerView) findViewById(R.id.recyclerCities);
         recyclerCities.setHasFixedSize(true);
 
@@ -85,6 +81,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         citiesAdapter = new CitiesAdapter(this);
         recyclerCities.setAdapter(citiesAdapter);
 
+        final FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View view)
+            {
+                showAddCityDialog();
+            }
+        });
+
+        recyclerCities.addOnScrollListener(new RecyclerView.OnScrollListener()
+        {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy)
+            {
+                super.onScrolled(recyclerView, dx, dy);
+                if (dy > 0 && fab.getVisibility() == View.VISIBLE) {
+                    fab.hide();
+                } else if (dy < 0 && fab.getVisibility() != View.VISIBLE) {
+                    fab.show();
+                }
+            }
+        });
         // adding touch support
         ItemTouchHelper.Callback callback = new CityItemTouchHelperCallback(citiesAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
@@ -92,7 +111,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void showAddCityDialog() {
+    public void showAddCityDialog()
+    {
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("City Name");
 
@@ -101,7 +121,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which)
+            {
                 citiesAdapter.addCity(new City(etCityText.getText().toString()));
 
                 recyclerCities.scrollToPosition(0);
@@ -118,6 +139,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         builder.show();
+    }
+
+    public void openWeatherActivity(int index, String city_selected)
+    {
+        if(isOnline(getApplicationContext()))
+        {
+            positionOfCity = index;
+
+            Intent intentShowWeather = new Intent(this, WeatherActivity.class);
+
+            intentShowWeather.putExtra(CITY_SELECTED, city_selected);
+
+            startActivity(intentShowWeather);
+        }
+        else
+        {
+            Toast.makeText(MainActivity.this, "No internet connection", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
@@ -147,12 +187,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         else if (id == R.id.nav_about)
         {
-            Toast.makeText(this, "David Bojkovski", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Created by: David Bojkovski", Toast.LENGTH_LONG).show();
         }
 
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public static boolean isOnline(Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        if (netInfo != null && netInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
     }
 }

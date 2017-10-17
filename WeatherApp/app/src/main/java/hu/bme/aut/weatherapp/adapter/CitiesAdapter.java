@@ -10,6 +10,7 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import hu.bme.aut.weatherapp.MainActivity;
 import hu.bme.aut.weatherapp.data.City;
 import hu.bme.aut.weatherapp.R;
 import hu.bme.aut.weatherapp.touch.CityTouchHelperAdapter;
@@ -44,6 +45,17 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.ViewHolder
     public void onBindViewHolder(final ViewHolder holder, int position)
     {
         holder.tvCity.setText(citiesList.get(position).getName());
+
+        holder.itemView.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((MainActivity)context).openWeatherActivity(holder.getAdapterPosition(),
+                        citiesList.get(holder.getAdapterPosition()).getName()
+                );
+            }
+        });
     }
 
     @Override
