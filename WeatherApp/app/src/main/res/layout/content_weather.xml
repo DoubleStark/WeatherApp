@@ -11,6 +11,7 @@
     tools:showIn="@layout/activity_weather">
 
      <ScrollView
+         android:id="@+id/scrollView"
           android:layout_height="match_parent"
           android:layout_width="match_parent">
 
@@ -140,7 +141,8 @@
                   android:layout_width="match_parent"
                   android:layout_height="250dp"
                   tools:context=".WeatherActivity"
-                  tools:layout="@layout/content_weather"/>
+                  tools:layout="@layout/content_weather"
+                  class="hu.bme.aut.weatherapp.MapFragment"/>
 
         </LinearLayout>
 

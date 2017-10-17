@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,6 +47,7 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
     final static String units = "metric";
     final static String TAG = "Weather_ACTIVITY";
     private GoogleMap mMap;
+    private ScrollView mScrollView;
     private Double cityLat;
     private Double cityLon;
     private String cityName;
@@ -58,6 +60,8 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mScrollView = (ScrollView) findViewById(R.id.scrollView);
         toolbar.setNavigationOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -127,10 +131,18 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
                         cityLon = response.body().getCoord().getLon();
                         cityName = response.body().getName() + ", " + response.body().getSys().getCountry();
 
-                        SupportMapFragment mapFragment =
-                                (SupportMapFragment) getSupportFragmentManager()
+                        MapFragment mapFragment =
+                                (MapFragment) getSupportFragmentManager()
                                         .findFragmentById(R.id.map);
                         mapFragment.getMapAsync(WeatherActivity.this);
+                        mapFragment.setListener(new MapFragment.OnTouchListener()
+                        {
+                            @Override
+                            public void onTouch()
+                            {
+                                mScrollView.requestDisallowInterceptTouchEvent(true);
+                            }
+                        });
                     }
                     else
                     {
