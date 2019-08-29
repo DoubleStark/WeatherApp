@@ -2,25 +2,20 @@ package hu.bme.aut.weatherapp;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
-import hu.bme.aut.weatherapp.MainActivity;
 import hu.bme.aut.weatherapp.data.WeatherResult;
 import hu.bme.aut.weatherapp.network.WeatherAPI;
 import retrofit2.Call;
@@ -32,17 +27,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCallback
-{
+public class WeatherActivity extends AppCompatActivity implements OnMapReadyCallback {
     final static String appID = "8e0ca9ed799aa620b637f323639bd526";
     final static String units = "metric";
     final static String TAG = "Weather_ACTIVITY";
@@ -53,43 +44,39 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
     private String cityName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weather);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mScrollView = (ScrollView) findViewById(R.id.scrollView);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener()
-        {
+        mScrollView = findViewById(R.id.scrollView);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 finish();
             }
         });
 
-        final TextView tvData = (TextView) findViewById(R.id.tvName);
-        final TextView tvTemperature = (TextView) findViewById(R.id.tvTemperature);
-        final TextView tvWeatherMain = (TextView) findViewById(R.id.tvWeatherMain);
-        final TextView tvMin = (TextView) findViewById(R.id.tvMin);
-        final ImageView ivIcon = (ImageView) findViewById(R.id.ivIcon);
-        final TextView tvWeatherDescription = (TextView) findViewById(R.id.tvWeatherDescription);
-        final TextView tvMax = (TextView) findViewById(R.id.tvMax);
-        final TextView tvHumidity = (TextView) findViewById(R.id.tvHumidity);
-        final TextView tvPressure = (TextView) findViewById(R.id.tvPressure);
-        final TextView tvSunset = (TextView) findViewById(R.id.tvSunset);
-        final TextView tvSunrise = (TextView) findViewById(R.id.tvSunrise);
-        final TextView tvClouds = (TextView) findViewById(R.id.tvClouds);
-        final TextView tvWindSpeed = (TextView) findViewById(R.id.tvWindSpeed);
-        final TextView tvWindDegrees = (TextView) findViewById(R.id.tvWindDegrees);
-        final TextView tvWindDirection = (TextView) findViewById(R.id.tvWindDirection);
+        final TextView tvData = findViewById(R.id.tvName);
+        final TextView tvTemperature = findViewById(R.id.tvTemperature);
+        final TextView tvWeatherMain = findViewById(R.id.tvWeatherMain);
+        final TextView tvMin = findViewById(R.id.tvMin);
+        final ImageView ivIcon = findViewById(R.id.ivIcon);
+        final TextView tvWeatherDescription = findViewById(R.id.tvWeatherDescription);
+        final TextView tvMax = findViewById(R.id.tvMax);
+        final TextView tvHumidity = findViewById(R.id.tvHumidity);
+        final TextView tvPressure = findViewById(R.id.tvPressure);
+        final TextView tvSunset = findViewById(R.id.tvSunset);
+        final TextView tvSunrise = findViewById(R.id.tvSunrise);
+        final TextView tvClouds = findViewById(R.id.tvClouds);
+        final TextView tvWindSpeed = findViewById(R.id.tvWindSpeed);
+        final TextView tvWindDegrees = findViewById(R.id.tvWindDegrees);
+        final TextView tvWindDirection = findViewById(R.id.tvWindDirection);
 
         //if(getIntent().getExtras().containsKey(MainActivity.CITY_SELECTED))
-        if (getIntent().hasExtra(MainActivity.CITY_SELECTED))
-        {
+        if (getIntent().hasExtra(MainActivity.CITY_SELECTED)) {
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://api.openweathermap.org")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -100,13 +87,10 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
             Call<WeatherResult> callWeather = weatherAPI.getWeather(city_selected, units, appID);
 
 
-            callWeather.enqueue(new Callback<WeatherResult>()
-            {
+            callWeather.enqueue(new Callback<WeatherResult>() {
                 @Override
-                public void onResponse(Call<WeatherResult> call, final Response<WeatherResult> response)
-                {
-                    if (response.code() == 200)
-                    {
+                public void onResponse(Call<WeatherResult> call, final Response<WeatherResult> response) {
+                    if (response.code() == 200) {
                         tvData.setText("" + response.body().getName() + ", " + response.body().getSys().getCountry());
                         tvTemperature.setText("" + response.body().getMain().getTemp() + "°C");
                         tvWeatherMain.setText("" + response.body().getWeather().get(0).getMain());
@@ -123,7 +107,7 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
                         tvWindDirection.setText("Wind direction: " + degreesToDirection(response.body().getWind().getDeg()));
 
                         Glide.with(WeatherActivity.this).load
-                                ("http://openweathermap.org/img/w/" + response.body().getWeather().get(0).getIcon().toString() + ".png")
+                                ("http://openweathermap.org/img/w/" + response.body().getWeather().get(0).getIcon() + ".png")
                                 .fitCenter()
                                 .into(ivIcon);
 
@@ -135,17 +119,13 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
                                 (MapFragment) getSupportFragmentManager()
                                         .findFragmentById(R.id.map);
                         mapFragment.getMapAsync(WeatherActivity.this);
-                        mapFragment.setListener(new MapFragment.OnTouchListener()
-                        {
+                        mapFragment.setListener(new MapFragment.OnTouchListener() {
                             @Override
-                            public void onTouch()
-                            {
+                            public void onTouch() {
                                 mScrollView.requestDisallowInterceptTouchEvent(true);
                             }
                         });
-                    }
-                    else
-                    {
+                    } else {
 
                         final AlertDialog.Builder errorBuilder = new AlertDialog.Builder(WeatherActivity.this);
                         errorBuilder.setTitle("Error occurred");
@@ -162,11 +142,9 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
                         errorBuilder.setView(layout);
                         errorBuilder.setCancelable(false);
 
-                        errorBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener()
-                        {
+                        errorBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i)
-                            {
+                            public void onClick(DialogInterface dialogInterface, int i) {
                                 finish();
                             }
                         });
@@ -176,8 +154,7 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
                 }
 
                 @Override
-                public void onFailure(Call<WeatherResult> call, Throwable t)
-                {
+                public void onFailure(Call<WeatherResult> call, Throwable t) {
                     tvData.setText(t.getLocalizedMessage());
                 }
             });
@@ -186,30 +163,24 @@ public class WeatherActivity  extends AppCompatActivity implements OnMapReadyCal
         }
     }
 
-    public static String convertDoubleToTime(double x)
-    {
+    public static String convertDoubleToTime(double x) {
         long xLong = (long) (x * 1000);
         Date xDate = new Date(xLong);
         String xDateStr = new SimpleDateFormat("HH:mm:ss").format(xDate);
         return xDateStr;
     }
 
-    public static String degreesToDirection(Double x)
-    {
-        if (x != null)
-        {
+    public static String degreesToDirection(Double x) {
+        if (x != null) {
             String directions[] = {"North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest", "North"};
-            return directions[(int) Math.round((((double) x % 360) / 45))];
-        }
-        else
-        {
+            return directions[(int) Math.round(((x % 360) / 45))];
+        } else {
             return "Not Specified";
         }
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap)
-    {
+    public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
         LatLng citySelected = new LatLng(cityLat, cityLon);

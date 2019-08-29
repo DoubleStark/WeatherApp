@@ -11,13 +11,11 @@ import android.view.MotionEvent;
 
 import com.google.android.gms.maps.SupportMapFragment;
 
-public class MapFragment extends SupportMapFragment
-{
+public class MapFragment extends SupportMapFragment {
     private OnTouchListener mListener;
 
     @Override
-    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle savedInstance)
-    {
+    public View onCreateView(LayoutInflater layoutInflater, ViewGroup viewGroup, Bundle savedInstance) {
         View layout = super.onCreateView(layoutInflater, viewGroup, savedInstance);
 
         TouchableWrapper frameLayout = new TouchableWrapper(getActivity());
@@ -28,28 +26,22 @@ public class MapFragment extends SupportMapFragment
         return layout;
     }
 
-    public void setListener(OnTouchListener listener)
-    {
+    public void setListener(OnTouchListener listener) {
         mListener = listener;
     }
 
-    public interface OnTouchListener
-    {
-        public abstract void onTouch();
+    public interface OnTouchListener {
+        void onTouch();
     }
 
-    public class TouchableWrapper extends FrameLayout
-    {
-        public TouchableWrapper(Context context)
-        {
+    public class TouchableWrapper extends FrameLayout {
+        public TouchableWrapper(Context context) {
             super(context);
         }
 
         @Override
-        public boolean dispatchTouchEvent(MotionEvent event)
-        {
-            switch (event.getAction())
-            {
+        public boolean dispatchTouchEvent(MotionEvent event) {
+            switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     mListener.onTouch();
                     break;
