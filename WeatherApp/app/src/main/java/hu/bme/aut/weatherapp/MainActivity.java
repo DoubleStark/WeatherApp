@@ -38,8 +38,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView recyclerCities;
     private CitiesAdapter citiesAdapter;
 
-    private int positionOfCity = -1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,12 +78,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         recyclerCities.setAdapter(citiesAdapter);
 
         final FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showAddCityDialog();
-            }
-        });
+        fab.setOnClickListener(view -> showAddCityDialog());
 
         recyclerCities.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -103,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ItemTouchHelper.Callback callback = new CityItemTouchHelperCallback(citiesAdapter);
         ItemTouchHelper touchHelper = new ItemTouchHelper(callback);
         touchHelper.attachToRecyclerView(recyclerCities);
-
     }
 
     public void showAddCityDialog() {
@@ -113,30 +105,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         final EditText etCityText = new EditText(this);
         builder.setView(etCityText);
 
-        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                citiesAdapter.addCity(new City(etCityText.getText().toString()));
+        builder.setPositiveButton("Ok", (dialog, which) -> {
+            citiesAdapter.addCity(new City(etCityText.getText().toString()));
+            recyclerCities.scrollToPosition(0);
 
-                recyclerCities.scrollToPosition(0);
-
-                Toast.makeText(MainActivity.this, "City added", Toast.LENGTH_LONG).show();
-            }
+            Toast.makeText(MainActivity.this, "City added", Toast.LENGTH_LONG).show();
         });
 
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
 
     public void openWeatherActivity(int index, String city_selected) {
         if (isOnline(getApplicationContext())) {
-            positionOfCity = index;
 
             Intent intentShowWeather = new Intent(this, WeatherActivity.class);
             intentShowWeather.putExtra(CITY_SELECTED, city_selected);
@@ -157,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -179,9 +160,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo netInfo = cm.getActiveNetworkInfo();
 
-        if (netInfo != null && netInfo.isConnected()) {
-            return true;
-        }
-        return false;
+        return netInfo != null && netInfo.isConnected();
     }
 }

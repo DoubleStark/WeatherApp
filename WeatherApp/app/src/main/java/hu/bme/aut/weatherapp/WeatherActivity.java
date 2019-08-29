@@ -52,12 +52,7 @@ public class WeatherActivity extends AppCompatActivity implements OnMapReadyCall
         setSupportActionBar(toolbar);
 
         mScrollView = findViewById(R.id.scrollView);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
         final TextView tvData = findViewById(R.id.tvName);
         final TextView tvTemperature = findViewById(R.id.tvTemperature);
@@ -119,12 +114,7 @@ public class WeatherActivity extends AppCompatActivity implements OnMapReadyCall
                                 (MapFragment) getSupportFragmentManager()
                                         .findFragmentById(R.id.map);
                         mapFragment.getMapAsync(WeatherActivity.this);
-                        mapFragment.setListener(new MapFragment.OnTouchListener() {
-                            @Override
-                            public void onTouch() {
-                                mScrollView.requestDisallowInterceptTouchEvent(true);
-                            }
-                        });
+                        mapFragment.setListener(() -> mScrollView.requestDisallowInterceptTouchEvent(true));
                     } else {
 
                         final AlertDialog.Builder errorBuilder = new AlertDialog.Builder(WeatherActivity.this);
@@ -142,12 +132,7 @@ public class WeatherActivity extends AppCompatActivity implements OnMapReadyCall
                         errorBuilder.setView(layout);
                         errorBuilder.setCancelable(false);
 
-                        errorBuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                finish();
-                            }
-                        });
+                        errorBuilder.setPositiveButton("Ok", (dialogInterface, i) -> finish());
 
                         errorBuilder.show();
                     }
@@ -172,7 +157,7 @@ public class WeatherActivity extends AppCompatActivity implements OnMapReadyCall
 
     public static String degreesToDirection(Double x) {
         if (x != null) {
-            String directions[] = {"North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest", "North"};
+            String[] directions = {"North", "NorthEast", "East", "SouthEast", "South", "SouthWest", "West", "NorthWest", "North"};
             return directions[(int) Math.round(((x % 360) / 45))];
         } else {
             return "Not Specified";
@@ -187,5 +172,4 @@ public class WeatherActivity extends AppCompatActivity implements OnMapReadyCall
         mMap.addMarker(new MarkerOptions().position(citySelected).title(cityName));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(citySelected));
     }
-
 }

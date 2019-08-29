@@ -42,14 +42,9 @@ public class CitiesAdapter extends RecyclerView.Adapter<CitiesAdapter.ViewHolder
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.tvCity.setText(citiesList.get(position).getName());
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ((MainActivity) context).openWeatherActivity(holder.getAdapterPosition(),
-                        citiesList.get(holder.getAdapterPosition()).getName()
-                );
-            }
-        });
+        holder.itemView.setOnClickListener(v -> ((MainActivity) context).openWeatherActivity(holder.getAdapterPosition(),
+                citiesList.get(holder.getAdapterPosition()).getName()
+        ));
     }
 
     @Override

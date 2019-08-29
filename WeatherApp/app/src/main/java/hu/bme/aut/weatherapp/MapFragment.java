@@ -52,6 +52,4 @@ public class MapFragment extends SupportMapFragment {
             return super.dispatchTouchEvent(event);
         }
     }
-
-
 }
